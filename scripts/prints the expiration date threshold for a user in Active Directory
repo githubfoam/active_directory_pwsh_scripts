@@ -1,0 +1,21 @@
+#ChatGPT
+# Replace "USERNAME" with the username of the user you want to check
+
+$Username = "USERNAME"
+
+# Connect to Active Directory
+Import-Module ActiveDirectory
+
+# Get the user's AD account
+$User = Get-ADUser $Username -Properties PasswordExpired
+
+# Check if the user's password is expired
+if ($User.PasswordExpired) {
+    # Calculate the expiration date threshold based on the domain password policy
+    $ExpirationThreshold = $User.PasswordLastSet.AddDays((Get-ADDefaultDomainPasswordPolicy).MaxPasswordAge.TotalDays * -1)
+    Write-Host "The password for user $Username has expired."
+    Write-Host "The password for user $Username has expired. The expiration date threshold is $($ExpirationThreshold.ToShortDateString())."
+}
+else {
+    Write-Host "The password for user $Username is not expired."
+}
